@@ -1,0 +1,300 @@
+/* Fermentation Monitor Design System — component styles */
+
+/* ── Design Tokens ─────────────────────────────────────── */
+:root {
+  /* Backgrounds — layered warm darks, not flat black */
+  --bg-base:     #131310;
+  --bg-surface:  #1B1A13;
+  --bg-elevated: #222118;
+  --bg-border:   #2C2B1D;
+  --bg-subtle:   #1E1D15;
+
+  /* Gold — the color of fermenting wort held up to light */
+  --gold:        #C8941F;
+  --gold-bright: #E8A832;
+  --gold-dim:    #5A420E;
+  --gold-glow:   rgba(200, 148, 31, 0.18);
+
+  /* State colors */
+  --active:      #4EB87C;
+  --active-glow: rgba(78, 184, 124, 0.22);
+  --slow:        #E89040;
+  --slow-glow:   rgba(232, 144, 64, 0.22);
+  --finished:    #5A7A8C;
+
+  /* Text — warm, not cold */
+  --text-primary:   #EDE8D4;
+  --text-secondary: #A09878;
+  --text-muted:     #504E3A;
+  --text-data:      #C8C0A2;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-data:    'DM Mono', 'Courier New', monospace;
+  --font-ui:      'DM Sans', system-ui, sans-serif;
+
+  /* Radii */
+  --r-sm:  4px;
+  --r:     8px;
+  --r-lg:  14px;
+  --r-xl:  20px;
+}
+
+/* ── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography utilities ──────────────────────────────── */
+.ds-display    { font-family: var(--font-display); }
+.ds-mono       { font-family: var(--font-data); }
+.ds-ui         { font-family: var(--font-ui); }
+
+.ds-text-primary   { color: var(--text-primary); }
+.ds-text-secondary { color: var(--text-secondary); }
+.ds-text-muted     { color: var(--text-muted); }
+.ds-text-data      { color: var(--text-data); }
+.ds-text-gold      { color: var(--gold-bright); }
+.ds-text-active    { color: var(--active); }
+.ds-text-slow      { color: var(--slow); }
+.ds-text-finished  { color: var(--finished); }
+
+/* ── Surface utilities ─────────────────────────────────── */
+.ds-bg-base     { background: var(--bg-base); }
+.ds-bg-surface  { background: var(--bg-surface); }
+.ds-bg-elevated { background: var(--bg-elevated); }
+
+.ds-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+}
+
+.ds-card-sm {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+}
+
+/* ── Button ────────────────────────────────────────────── */
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--r);
+  border: none;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.ds-btn-primary {
+  background: var(--gold);
+  color: #0E0D0A;
+  font-weight: 600;
+}
+.ds-btn-primary:hover { background: var(--gold-bright); }
+
+.ds-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--bg-border);
+  color: var(--text-secondary);
+}
+.ds-btn-ghost:hover { border-color: var(--gold-dim); color: var(--text-primary); }
+
+/* ── Input ─────────────────────────────────────────────── */
+.ds-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--bg-border);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ds-input:focus  { border-color: var(--gold-dim); }
+.ds-input::placeholder { color: var(--text-muted); }
+
+/* ── Badge ─────────────────────────────────────────────── */
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ds-badge-active   { background: var(--active-glow);  color: var(--active);   border: 1px solid rgba(78,184,124,0.3); }
+.ds-badge-slow     { background: var(--slow-glow);    color: var(--slow);     border: 1px solid rgba(232,144,64,0.3); }
+.ds-badge-finished { background: rgba(90,122,140,0.15); color: var(--finished); border: 1px solid rgba(90,122,140,0.3); }
+
+/* ── Pulse dot ─────────────────────────────────────────── */
+.ds-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.ds-pulse-dot-active   { background: var(--active);   animation: ds-pulse 2s ease-in-out infinite; }
+.ds-pulse-dot-slow     { background: var(--slow);     animation: ds-pulse 3.5s ease-in-out infinite; }
+.ds-pulse-dot-finished { background: var(--finished); }
+
+@keyframes ds-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+/* ── Label ─────────────────────────────────────────────── */
+.ds-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ── Divider ───────────────────────────────────────────── */
+.ds-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--bg-border);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 2px; }
+
+/* ── Pulse Gauge (signature element) ──────────────────── */
+.ds-gauge-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+.ds-gauge-svg {
+  width: 160px;
+  height: 160px;
+  transform: rotate(-90deg);
+}
+.ds-gauge-track {
+  fill: none;
+  stroke: var(--bg-elevated);
+  stroke-width: 10;
+}
+.ds-gauge-arc {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 408.41;
+  transition: stroke-dashoffset 1s ease, stroke 0.5s ease;
+}
+.ds-gauge-arc-active   { stroke: var(--active);   filter: drop-shadow(0 0 6px var(--active)); }
+.ds-gauge-arc-slow     { stroke: var(--slow);     filter: drop-shadow(0 0 4px var(--slow)); }
+.ds-gauge-arc-finished { stroke: var(--finished); }
+.ds-gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.ds-gauge-state  { font-family: var(--font-data); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 2px; }
+.ds-gauge-number { font-family: var(--font-display); font-size: 38px; font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: var(--text-primary); }
+.ds-gauge-unit   { font-family: var(--font-data); font-size: 9px; color: var(--text-muted); letter-spacing: 0.05em; margin-top: 2px; }
+
+@keyframes ds-gauge-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--active)); }
+  50%       { filter: drop-shadow(0 0 14px var(--active)) drop-shadow(0 0 30px var(--active-glow)); }
+}
+.ds-gauge-arc-active { animation: ds-gauge-pulse 2.4s ease-in-out infinite; }
+
+/* ── Metric Card ───────────────────────────────────────── */
+.ds-metric-value {
+  font-family: var(--font-data);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.ds-metric-value-time {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--gold-bright);
+  font-size: 24px;
+}
+.ds-metric-unit {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  margin-left: 2px;
+}
+.ds-metric-sub {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* ── Sidebar ───────────────────────────────────────────── */
+.ds-sidebar {
+  width: 60px;
+  min-height: 100vh;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--bg-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0;
+  gap: 6px;
+}
+.ds-nav-item {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ds-nav-item:hover { background: var(--bg-elevated); color: var(--text-secondary); }
+.ds-nav-item-active { background: var(--gold-glow); color: var(--gold-bright); }
+
+/* ── Topbar ────────────────────────────────────────────── */
+.ds-topbar {
+  height: 56px;
+  border-bottom: 1px solid var(--bg-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+}
+.ds-topbar-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

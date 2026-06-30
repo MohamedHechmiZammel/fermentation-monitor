@@ -1,0 +1,75 @@
+<!-- @dsCard group="Foundation" name="Design Tokens" subtitle="Palette, typography, state colors" viewport='{"width":640,"height":380}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Mono:wght@400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base:#131310;--bg-surface:#1B1A13;--bg-elevated:#222118;--bg-border:#2C2B1D;
+  --gold:#C8941F;--gold-bright:#E8A832;
+  --active:#4EB87C;--slow:#E89040;--finished:#5A7A8C;
+  --text-primary:#EDE8D4;--text-secondary:#A09878;--text-muted:#504E3A;
+  --font-display:'Playfair Display',serif;--font-data:'DM Mono',monospace;--font-ui:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-base);color:var(--text-primary);font-family:var(--font-ui);font-size:13px;padding:24px;-webkit-font-smoothing:antialiased}
+.section{margin-bottom:20px}
+.sec-label{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{display:flex;flex-direction:column;gap:5px;align-items:center}
+.swatch-color{width:40px;height:40px;border-radius:6px;border:1px solid rgba(255,255,255,.08)}
+.swatch-name{font-family:var(--font-data);font-size:8px;color:var(--text-muted);text-align:center}
+.type-row{display:flex;gap:24px;align-items:baseline}
+.type-sample{display:flex;flex-direction:column;gap:2px}
+.type-name{font-family:var(--font-data);font-size:8px;color:var(--text-muted)}
+.state-row{display:flex;gap:10px}
+.state-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="section">
+  <div class="sec-label">Backgrounds</div>
+  <div class="swatches">
+    <div class="swatch"><div class="swatch-color" style="background:#131310;border-color:#2C2B1D"></div><div class="swatch-name">bg-base</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1B1A13"></div><div class="swatch-name">bg-surface</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#222118"></div><div class="swatch-name">bg-elevated</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2C2B1D"></div><div class="swatch-name">bg-border</div></div>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-label">Gold accent</div>
+  <div class="swatches">
+    <div class="swatch"><div class="swatch-color" style="background:#C8941F"></div><div class="swatch-name">gold</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#E8A832"></div><div class="swatch-name">gold-bright</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#5A420E"></div><div class="swatch-name">gold-dim</div></div>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-label">State colors</div>
+  <div class="state-row">
+    <span class="state-badge" style="background:rgba(78,184,124,.22);color:#4EB87C;border:1px solid rgba(78,184,124,.3)">● Active</span>
+    <span class="state-badge" style="background:rgba(232,144,64,.22);color:#E89040;border:1px solid rgba(232,144,64,.3)">● Slow</span>
+    <span class="state-badge" style="background:rgba(90,122,140,.15);color:#5A7A8C;border:1px solid rgba(90,122,140,.3)">● Finished</span>
+  </div>
+</div>
+<div class="section">
+  <div class="sec-label">Typography</div>
+  <div class="type-row">
+    <div class="type-sample">
+      <div class="type-name">Playfair Display — display/data hero</div>
+      <span style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:#EDE8D4;letter-spacing:-.02em">42.3 Pa</span>
+    </div>
+    <div class="type-sample">
+      <div class="type-name">DM Mono — labels/data</div>
+      <span style="font-family:'DM Mono',monospace;font-size:14px;color:#A09878">23.4 °C · 63 %RH</span>
+    </div>
+    <div class="type-sample">
+      <div class="type-name">DM Sans — UI</div>
+      <span style="font-family:'DM Sans',sans-serif;font-size:14px;color:#EDE8D4">New batch</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

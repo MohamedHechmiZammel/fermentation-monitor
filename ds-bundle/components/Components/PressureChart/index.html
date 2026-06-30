@@ -1,0 +1,65 @@
+<!-- @dsCard group="Components" name="PressureChart" subtitle="24h headspace Δ pressure line chart with gradient fill" viewport='{"width":640,"height":280}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg-base:#131310;--bg-surface:#1B1A13;--bg-elevated:#222118;--bg-border:#2C2B1D;
+--gold:#C8941F;--gold-bright:#E8A832;--active:#4EB87C;
+--text-primary:#EDE8D4;--text-secondary:#A09878;--text-muted:#504E3A;
+--font-data:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-base);padding:16px;-webkit-font-smoothing:antialiased}
+.card{background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:14px;padding:20px 22px 14px}
+.header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.title{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.range{font-family:var(--font-data);font-size:9px;color:var(--text-muted)}
+.current{display:flex;align-items:baseline;gap:6px;margin-bottom:16px}
+.value{font-family:var(--font-data);font-size:26px;font-weight:500;color:var(--gold-bright);letter-spacing:-.03em}
+.unit{font-family:var(--font-data);font-size:10px;color:var(--text-muted)}
+.delta{font-family:var(--font-data);font-size:10px;color:var(--active);margin-left:auto}
+.chart-wrap{position:relative;height:140px}
+.xlabels{display:flex;justify-content:space-between;margin-top:6px}
+.xlabel{font-family:var(--font-data);font-size:8px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <span class="title">Headspace Pressure Δ</span>
+    <span class="range">Last 24 h</span>
+  </div>
+  <div class="current">
+    <span class="value">42.3</span>
+    <span class="unit">Pa above baseline</span>
+    <span class="delta">↑ +2.1 from last</span>
+  </div>
+  <div class="chart-wrap">
+    <svg width="100%" height="140" viewBox="0 0 700 140" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8941F" stop-opacity=".22"/>
+          <stop offset="100%" stop-color="#C8941F" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <line x1="0" y1="35" x2="700" y2="35" stroke="#2C2B1D" stroke-width=".8"/>
+      <line x1="0" y1="70" x2="700" y2="70" stroke="#2C2B1D" stroke-width=".8"/>
+      <line x1="0" y1="105" x2="700" y2="105" stroke="#2C2B1D" stroke-width=".8"/>
+      <text x="3" y="32" font-family="'DM Mono'" font-size="8" fill="#504E3A">80</text>
+      <text x="3" y="67" font-family="'DM Mono'" font-size="8" fill="#504E3A">40</text>
+      <text x="3" y="102" font-family="'DM Mono'" font-size="8" fill="#504E3A">0</text>
+      <path d="M0,136 C30,135 60,132 90,127 C120,122 150,112 180,99 C210,86 240,65 270,48 C300,33 330,26 360,25 C390,25 420,28 450,36 C480,48 510,68 540,89 C570,108 600,122 630,129 C660,133 690,136 700,136 L700,140 L0,140Z" fill="url(#g)"/>
+      <path d="M0,136 C30,135 60,132 90,127 C120,122 150,112 180,99 C210,86 240,65 270,48 C300,33 330,26 360,25 C390,25 420,28 450,36 C480,48 510,68 540,89 C570,108 600,122 630,129 C660,133 690,136 700,136" fill="none" stroke="#C8941F" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="xlabels">
+    <span class="xlabel">24 h ago</span>
+    <span class="xlabel">18 h ago</span>
+    <span class="xlabel">12 h ago</span>
+    <span class="xlabel">6 h ago</span>
+    <span class="xlabel">Now</span>
+  </div>
+</div>
+</body>
+</html>

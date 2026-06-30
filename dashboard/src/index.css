@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────── */
+:root {
+  --bg-base:     #131310;
+  --bg-surface:  #1B1A13;
+  --bg-elevated: #222118;
+  --bg-border:   #2C2B1D;
+
+  --gold:        #C8941F;
+  --gold-bright: #E8A832;
+  --gold-dim:    #5A420E;
+  --gold-glow:   rgba(200, 148, 31, 0.18);
+
+  --active:      #4EB87C;
+  --active-glow: rgba(78, 184, 124, 0.22);
+  --slow:        #E89040;
+  --slow-glow:   rgba(232, 144, 64, 0.22);
+  --finished:    #5A7A8C;
+
+  --text-primary:   #EDE8D4;
+  --text-secondary: #A09878;
+  --text-muted:     #504E3A;
+  --text-data:      #C8C0A2;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-data:    'DM Mono', 'Courier New', monospace;
+  --font-ui:      'DM Sans', system-ui, sans-serif;
+
+  --r-sm: 4px;
+  --r:    8px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+}
+
+/* ── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 2px; }
+
+/* ── Animations ────────────────────────────────────────── */
+@keyframes gauge-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--active)); }
+  50%       { filter: drop-shadow(0 0 14px var(--active)) drop-shadow(0 0 30px var(--active-glow)); }
+}
+@keyframes gauge-pulse-slow {
+  0%, 100% { filter: drop-shadow(0 0 3px var(--slow)); }
+  50%       { filter: drop-shadow(0 0 10px var(--slow)) drop-shadow(0 0 22px var(--slow-glow)); }
+}
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+@keyframes number-breathe {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.82; }
+}

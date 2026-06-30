@@ -1,0 +1,50 @@
+<!-- @dsCard group="Components" name="MetricCard" subtitle="Temperature / Humidity / Time / Status variants" viewport='{"width":600,"height":130}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg-base:#131310;--bg-surface:#1B1A13;--bg-elevated:#222118;--bg-border:#2C2B1D;
+--gold-bright:#E8A832;--active:#4EB87C;
+--text-primary:#EDE8D4;--text-secondary:#A09878;--text-muted:#504E3A;
+--font-display:'Playfair Display',serif;--font-data:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-base);padding:16px;-webkit-font-smoothing:antialiased}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:8px;padding:14px 16px}
+.label{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px}
+.value{font-family:var(--font-data);font-size:20px;font-weight:500;color:var(--text-primary);letter-spacing:-.03em;line-height:1}
+.unit{font-size:11px;font-weight:300;color:var(--text-secondary);margin-left:2px}
+.sub{font-family:var(--font-data);font-size:9px;color:var(--text-muted);margin-top:4px}
+.value-time{font-family:var(--font-display);font-style:italic;font-size:22px;color:var(--gold-bright)}
+.value-status{font-size:11px;display:flex;align-items:center;gap:5px;color:var(--active);line-height:1}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--active);animation:p 2s ease-in-out infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+<div class="strip">
+  <div class="card">
+    <div class="label">Temperature</div>
+    <div class="value">23.4<span class="unit">°C</span></div>
+    <div class="sub">DHT22 ambient</div>
+  </div>
+  <div class="card">
+    <div class="label">Humidity</div>
+    <div class="value">63<span class="unit">%RH</span></div>
+    <div class="sub">+5% from baseline</div>
+  </div>
+  <div class="card">
+    <div class="label">Fermenting</div>
+    <div class="value value-time">14h 23m</div>
+    <div class="sub">since batch start</div>
+  </div>
+  <div class="card">
+    <div class="label">Recorder</div>
+    <div class="value value-status"><span class="dot"></span>up · 18s lag</div>
+    <div class="sub">MQTT connected</div>
+  </div>
+</div>
+</body>
+</html>

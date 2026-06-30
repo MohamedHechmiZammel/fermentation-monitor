@@ -1,0 +1,27 @@
+<!-- @dsCard group="Components" name="ActivityBadge" subtitle="Active / Slow / Finished pill badges" viewport='{"width":340,"height":80}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--active:#4EB87C;--slow:#E89040;--finished:#5A7A8C;--font-data:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#131310;display:flex;align-items:center;justify-content:center;min-height:100vh;gap:10px;-webkit-font-smoothing:antialiased}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.active{background:rgba(78,184,124,.22);color:var(--active);border:1px solid rgba(78,184,124,.3)}
+.active .dot{background:var(--active);animation:p 2.4s ease-in-out infinite}
+.slow{background:rgba(232,144,64,.22);color:var(--slow);border:1px solid rgba(232,144,64,.3)}
+.slow .dot{background:var(--slow);animation:p 3.5s ease-in-out infinite}
+.finished{background:rgba(90,122,140,.15);color:var(--finished);border:1px solid rgba(90,122,140,.3)}
+.finished .dot{background:var(--finished)}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+  <span class="badge active"><span class="dot"></span>Active</span>
+  <span class="badge slow"><span class="dot"></span>Slow</span>
+  <span class="badge finished"><span class="dot"></span>Finished</span>
+</body>
+</html>

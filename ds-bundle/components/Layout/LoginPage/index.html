@@ -1,0 +1,48 @@
+<!-- @dsCard group="Layout" name="LoginPage" subtitle="Full login screen with brand mark and form" viewport='{"width":480,"height":500}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Mono:wght@400&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg-base:#131310;--bg-surface:#1B1A13;--bg-elevated:#222118;--bg-border:#2C2B1D;
+--gold:#C8941F;--gold-bright:#E8A832;--gold-dim:#5A420E;
+--text-primary:#EDE8D4;--text-secondary:#A09878;--text-muted:#504E3A;
+--font-display:'Playfair Display',serif;--font-data:'DM Mono',monospace;--font-ui:'DM Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(200,148,31,.06) 0%,transparent 70%),var(--bg-base);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:0;-webkit-font-smoothing:antialiased}
+.brand{text-align:center;margin-bottom:32px}
+.brand-name{font-family:var(--font-display);font-size:26px;font-weight:600;letter-spacing:-.02em;color:var(--text-primary)}
+.brand-name em{font-style:italic;color:var(--gold-bright)}
+.brand-sub{font-family:var(--font-data);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:5px}
+.card{width:320px;background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:20px;padding:32px 28px 24px}
+.div{width:28px;height:1px;background:var(--bg-border);margin:0 auto 24px}
+.field{margin-bottom:12px}
+.field label{display:block;font-family:var(--font-data);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px}
+.field input{width:100%;background:var(--bg-elevated);border:1px solid var(--bg-border);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-family:var(--font-ui);font-size:13px;outline:none}
+.btn{width:100%;margin-top:20px;padding:11px;background:var(--gold);border:none;border-radius:8px;color:#0E0D0A;font-family:var(--font-ui);font-size:13px;font-weight:600;cursor:pointer}
+.foot{margin-top:18px;text-align:center;font-family:var(--font-data);font-size:9px;letter-spacing:.06em;color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="brand">
+  <svg style="display:block;margin:0 auto 14px;width:44px;height:44px" viewBox="0 0 48 48" fill="none">
+    <circle cx="24" cy="32" r="12" stroke="#C8941F" stroke-width="1.5" opacity=".4"/>
+    <circle cx="24" cy="26" r="9"  stroke="#C8941F" stroke-width="1.5" opacity=".6"/>
+    <circle cx="24" cy="20" r="6"  stroke="#E8A832" stroke-width="1.5" opacity=".85"/>
+    <circle cx="24" cy="16" r="3"  fill="#E8A832"/>
+    <line x1="24" y1="44" x2="24" y2="36" stroke="#C8941F" stroke-width="1.5" opacity=".4"/>
+  </svg>
+  <div class="brand-name">Fermentation <em>Monitor</em></div>
+  <div class="brand-sub">Batch intelligence system · v0.1</div>
+</div>
+<div class="card">
+  <div class="div"></div>
+  <div class="field"><label>Username</label><input type="text" value="admin" readonly></div>
+  <div class="field"><label>Password</label><input type="password" value="password" readonly></div>
+  <button class="btn">Sign in</button>
+</div>
+<div class="foot" style="margin-top:18px">offline-first · zero cloud · open source</div>
+</body>
+</html>

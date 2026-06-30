@@ -1,0 +1,161 @@
+<!-- @dsCard group="Layout" name="Dashboard" subtitle="Full instrument panel — sidebar + chart + gauge + metrics" viewport='{"width":900,"height":560}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg-base:#131310;--bg-surface:#1B1A13;--bg-elevated:#222118;--bg-border:#2C2B1D;
+--gold:#C8941F;--gold-bright:#E8A832;--gold-dim:#5A420E;--gold-glow:rgba(200,148,31,.18);
+--active:#4EB87C;--active-glow:rgba(78,184,124,.22);--slow:#E89040;--finished:#5A7A8C;
+--text-primary:#EDE8D4;--text-secondary:#A09878;--text-muted:#504E3A;--text-data:#C8C0A2;
+--font-display:'Playfair Display',serif;--font-data:'DM Mono',monospace;--font-ui:'DM Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-base);color:var(--text-primary);font-family:var(--font-ui);font-size:13px;-webkit-font-smoothing:antialiased;display:flex;height:100vh;overflow:hidden}
+/* sidebar */
+.sb{width:58px;background:var(--bg-surface);border-right:1px solid var(--bg-border);display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:5px;flex-shrink:0}
+.sb-logo{width:28px;height:28px;margin-bottom:14px}
+.sb-div{width:24px;height:1px;background:var(--bg-border);margin:6px 0}
+.nav{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--text-muted)}
+.nav.active{background:var(--gold-glow);color:var(--gold-bright)}
+.sb-sp{flex:1}
+.sb-av{width:28px;height:28px;border-radius:50%;background:var(--bg-elevated);border:1px solid var(--bg-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:11px;color:var(--text-secondary)}
+/* main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* topbar */
+.tb{height:52px;border-bottom:1px solid var(--bg-border);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0}
+.tb-title{font-family:var(--font-display);font-size:17px;font-weight:600;letter-spacing:-.01em}
+.tb-sep{width:1px;height:14px;background:var(--bg-border)}
+.tb-time{font-family:var(--font-data);font-size:10px;color:var(--text-muted)}
+.tb-sp{flex:1}
+.tb-btn{height:28px;padding:0 10px;background:transparent;border:1px solid var(--bg-border);border-radius:4px;color:var(--text-secondary);font-family:var(--font-ui);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.tb-btn-p{background:var(--gold);border-color:var(--gold);color:#0E0D0A;font-weight:600}
+/* content */
+.content{flex:1;display:grid;grid-template-rows:1fr auto;padding:18px;gap:14px;overflow:hidden}
+.top{display:grid;grid-template-columns:1fr 240px;gap:14px}
+/* chart card */
+.cc{background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:13px;padding:18px 20px 12px;display:flex;flex-direction:column}
+.cc-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+.cc-title{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+.cc-range{font-family:var(--font-data);font-size:9px;color:var(--text-muted)}
+.cc-cur{display:flex;align-items:baseline;gap:5px;margin-bottom:14px}
+.cc-val{font-family:var(--font-data);font-size:24px;font-weight:500;color:var(--gold-bright);letter-spacing:-.03em}
+.cc-unit{font-family:var(--font-data);font-size:10px;color:var(--text-muted)}
+.cc-delta{font-family:var(--font-data);font-size:10px;color:var(--active);margin-left:auto}
+.chart-w{flex:1;min-height:120px;position:relative}
+.xlbl{display:flex;justify-content:space-between;margin-top:5px}
+.xlbl span{font-family:var(--font-data);font-size:8px;color:var(--text-muted)}
+/* gauge card */
+.gc{background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:13px;padding:18px 20px;display:flex;flex-direction:column;align-items:center}
+.gc-lbl{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);align-self:flex-start;margin-bottom:14px}
+.gw{position:relative;width:140px;height:140px}
+.gsvg{width:140px;height:140px;transform:rotate(-90deg)}
+.gtrack{fill:none;stroke:var(--bg-elevated);stroke-width:9}
+.garc{fill:none;stroke:var(--active);stroke-width:9;stroke-linecap:round;stroke-dasharray:359;stroke-dashoffset:108;animation:gp 2.4s ease-in-out infinite}
+@keyframes gp{0%,100%{filter:drop-shadow(0 0 4px var(--active))}50%{filter:drop-shadow(0 0 12px var(--active))}}
+.gcen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.gs{font-family:var(--font-data);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--active);margin-bottom:2px}
+.gn{font-family:var(--font-display);font-size:32px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--text-primary)}
+.gu{font-family:var(--font-data);font-size:8px;color:var(--text-muted);letter-spacing:.05em;margin-top:1px}
+.gstats{margin-top:14px;width:100%;display:flex;flex-direction:column;gap:6px}
+.gstat{display:flex;justify-content:space-between;border-top:1px solid var(--bg-border);padding-top:6px}
+.gstat-l{font-family:var(--font-data);font-size:9px;color:var(--text-muted)}
+.gstat-v{font-family:var(--font-data);font-size:10px;font-weight:500;color:var(--text-data)}
+/* metrics strip */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mc{background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:8px;padding:13px 15px}
+.mc-lbl{font-family:var(--font-data);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.mc-val{font-family:var(--font-data);font-size:19px;font-weight:500;color:var(--text-primary);letter-spacing:-.03em;line-height:1}
+.mc-unit{font-size:10px;font-weight:300;color:var(--text-secondary);margin-left:2px}
+.mc-sub{font-family:var(--font-data);font-size:8px;color:var(--text-muted);margin-top:4px}
+.mc-time{font-family:var(--font-display);font-style:italic;font-size:20px;color:var(--gold-bright)}
+.mc-stat{font-size:10px;display:flex;align-items:center;gap:4px;color:var(--active);line-height:1}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--active);animation:sp 2s ease-in-out infinite}
+@keyframes sp{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</head>
+<body>
+<!-- Sidebar -->
+<nav class="sb">
+  <svg class="sb-logo" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="22" r="7" stroke="#C8941F" stroke-width="1.2" opacity=".4"/>
+    <circle cx="16" cy="17" r="5" stroke="#C8941F" stroke-width="1.2" opacity=".6"/>
+    <circle cx="16" cy="13" r="3" stroke="#E8A832" stroke-width="1.2" opacity=".9"/>
+    <circle cx="16" cy="10" r="1.5" fill="#E8A832"/>
+  </svg>
+  <div class="sb-div"></div>
+  <div class="nav active"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/></svg></div>
+  <div class="nav"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><polyline points="1,14 5,9 8,11 11,6 15,2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+  <div class="nav"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><line x1="8" y1="5" x2="8" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="10.5" r=".8" fill="currentColor"/></svg></div>
+  <div class="sb-sp"></div>
+  <div class="sb-av">A</div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+  <header class="tb">
+    <div class="tb-title">Wheat Beer <em style="font-style:italic;color:var(--gold-bright)">#1</em></div>
+    <div class="tb-sep"></div>
+    <div class="tb-time">14h 23m fermenting</div>
+    <div class="tb-sp"></div>
+    <div style="display:flex;gap:7px">
+      <button class="tb-btn">Sign out</button>
+      <button class="tb-btn tb-btn-p">New batch</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="top">
+      <!-- Chart -->
+      <div class="cc">
+        <div class="cc-hdr"><span class="cc-title">Headspace Pressure Δ</span><span class="cc-range">Last 24 h</span></div>
+        <div class="cc-cur">
+          <span class="cc-val">42.3</span>
+          <span class="cc-unit">Pa above baseline</span>
+          <span class="cc-delta">↑ +2.1</span>
+        </div>
+        <div class="chart-w">
+          <svg width="100%" height="100%" viewBox="0 0 700 140" preserveAspectRatio="none">
+            <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8941F" stop-opacity=".2"/><stop offset="100%" stop-color="#C8941F" stop-opacity="0"/></linearGradient></defs>
+            <line x1="0" y1="35" x2="700" y2="35" stroke="#2C2B1D" stroke-width=".8"/>
+            <line x1="0" y1="70" x2="700" y2="70" stroke="#2C2B1D" stroke-width=".8"/>
+            <line x1="0" y1="105" x2="700" y2="105" stroke="#2C2B1D" stroke-width=".8"/>
+            <path d="M0,136 C30,135 60,132 90,127 C120,122 150,112 180,99 C210,86 240,65 270,48 C300,33 330,26 360,25 C390,25 420,28 450,36 C480,48 510,68 540,89 C570,108 600,122 630,129 C660,133 690,136 700,136 L700,140 L0,140Z" fill="url(#cg)"/>
+            <path d="M0,136 C30,135 60,132 90,127 C120,122 150,112 180,99 C210,86 240,65 270,48 C300,33 330,26 360,25 C390,25 420,28 450,36 C480,48 510,68 540,89 C570,108 600,122 630,129 C660,133 690,136 700,136" fill="none" stroke="#C8941F" stroke-width="1.6"/>
+          </svg>
+        </div>
+        <div class="xlbl"><span>24h ago</span><span>18h ago</span><span>12h ago</span><span>6h ago</span><span>Now</span></div>
+      </div>
+      <!-- Gauge -->
+      <div class="gc">
+        <div class="gc-lbl">Fermentation Pulse</div>
+        <div class="gw">
+          <svg class="gsvg" viewBox="0 0 140 140">
+            <circle class="gtrack" cx="70" cy="70" r="57"/>
+            <circle class="garc" cx="70" cy="70" r="57"/>
+          </svg>
+          <div class="gcen">
+            <div class="gs">ACTIVE</div>
+            <div class="gn">7</div>
+            <div class="gu">bubbles / 10 min</div>
+          </div>
+        </div>
+        <div class="gstats">
+          <div class="gstat"><span class="gstat-l">threshold</span><span class="gstat-v">0.5 Pa</span></div>
+          <div class="gstat"><span class="gstat-l">peak rate</span><span class="gstat-v">18 / 10 min</span></div>
+          <div class="gstat"><span class="gstat-l">trend</span><span class="gstat-v" style="color:var(--slow)">↘ slowing</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics strip -->
+    <div class="strip">
+      <div class="mc"><div class="mc-lbl">Temperature</div><div class="mc-val">23.4<span class="mc-unit">°C</span></div><div class="mc-sub">DHT22 ambient</div></div>
+      <div class="mc"><div class="mc-lbl">Humidity</div><div class="mc-val">63<span class="mc-unit">%RH</span></div><div class="mc-sub">+5% from baseline</div></div>
+      <div class="mc"><div class="mc-lbl">Fermenting</div><div class="mc-val mc-time">14h 23m</div><div class="mc-sub">since batch start</div></div>
+      <div class="mc"><div class="mc-lbl">Recorder</div><div class="mc-val mc-stat"><span class="sdot"></span>up · 18s lag</div><div class="mc-sub">MQTT connected</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+# Firmware
+firmware/.pio/
+firmware/src/config.h
+
+# Backend secrets & data
+backend/.env
+backend/passwd
+backend/acl
+backend/certs/
+backend/data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Dashboard
+dashboard/node_modules/
+dashboard/dist/
+
+# Wokwi token
+.wokwi_token

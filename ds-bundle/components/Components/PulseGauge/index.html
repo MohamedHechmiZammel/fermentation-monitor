@@ -1,0 +1,57 @@
+<!-- @dsCard group="Components" name="PulseGauge" subtitle="Active / Slow / Finished states with animation" viewport='{"width":300,"height":340}' -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--bg-base:#131310;--bg-surface:#1B1A13;--bg-elevated:#222118;--bg-border:#2C2B1D;
+--active:#4EB87C;--active-glow:rgba(78,184,124,.22);--slow:#E89040;--finished:#5A7A8C;
+--text-primary:#EDE8D4;--text-muted:#504E3A;
+--font-display:'Playfair Display',serif;--font-data:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-base);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;padding:20px;-webkit-font-smoothing:antialiased}
+.gauge-card{background:var(--bg-surface);border:1px solid var(--bg-border);border-radius:14px;padding:24px;display:flex;flex-direction:column;align-items:center;width:240px}
+.gauge-label{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);align-self:flex-start;margin-bottom:16px}
+.gauge-wrap{position:relative;width:160px;height:160px}
+.gauge-svg{width:160px;height:160px;transform:rotate(-90deg)}
+.track{fill:none;stroke:var(--bg-elevated);stroke-width:10}
+.arc{fill:none;stroke-width:10;stroke-linecap:round;stroke-dasharray:408.41;transition:stroke-dashoffset 1s ease}
+.arc-active{stroke:var(--active);animation:gauge-pulse 2.4s ease-in-out infinite}
+.arc-slow{stroke:var(--slow)}
+.arc-finished{stroke:var(--finished)}
+.gauge-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.g-state{font-family:var(--font-data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.g-number{font-family:var(--font-display);font-size:38px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--text-primary)}
+.g-unit{font-family:var(--font-data);font-size:9px;color:var(--text-muted);letter-spacing:.05em;margin-top:2px}
+@keyframes gauge-pulse{0%,100%{filter:drop-shadow(0 0 4px var(--active))}50%{filter:drop-shadow(0 0 14px var(--active))drop-shadow(0 0 30px var(--active-glow))}}
+.states{display:flex;gap:8px}
+.state-pill{font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid}
+</style>
+</head>
+<body>
+
+<!-- ACTIVE state -->
+<div class="gauge-card">
+  <div class="gauge-label">Fermentation Pulse</div>
+  <div class="gauge-wrap">
+    <svg class="gauge-svg" viewBox="0 0 160 160">
+      <circle class="track" cx="80" cy="80" r="65"/>
+      <circle class="arc arc-active" cx="80" cy="80" r="65" style="stroke-dashoffset:122.5"/>
+    </svg>
+    <div class="gauge-center">
+      <div class="g-state" style="color:var(--active)">ACTIVE</div>
+      <div class="g-number">7</div>
+      <div class="g-unit">bubbles / 10 min</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLOW / FINISHED pills -->
+<div class="states">
+  <span class="state-pill" style="color:var(--slow);border-color:rgba(232,144,64,.3);background:rgba(232,144,64,.1)">● Slow</span>
+  <span class="state-pill" style="color:var(--finished);border-color:rgba(90,122,140,.3);background:rgba(90,122,140,.1)">● Finished</span>
+</div>
+
+</body>
+</html>

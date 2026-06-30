@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fermentation Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────── */
+    :root {
+      /* Backgrounds — layered warm darks, not flat black */
+      --bg-base:     #131310;
+      --bg-surface:  #1B1A13;
+      --bg-elevated: #222118;
+      --bg-border:   #2C2B1D;
+      --bg-subtle:   #1E1D15;
+
+      /* Gold — the color of fermenting wort held up to light */
+      --gold:        #C8941F;
+      --gold-bright: #E8A832;
+      --gold-dim:    #5A420E;
+      --gold-glow:   rgba(200, 148, 31, 0.18);
+
+      /* State colors */
+      --active:      #4EB87C;
+      --active-glow: rgba(78, 184, 124, 0.22);
+      --slow:        #E89040;
+      --slow-glow:   rgba(232, 144, 64, 0.22);
+      --finished:    #5A7A8C;
+
+      /* Text — warm, not cold */
+      --text-primary:   #EDE8D4;
+      --text-secondary: #A09878;
+      --text-muted:     #504E3A;
+      --text-data:      #C8C0A2;
+
+      /* Typography */
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-data:    'DM Mono', 'Courier New', monospace;
+      --font-ui:      'DM Sans', system-ui, sans-serif;
+
+      /* Radii */
+      --r-sm:  4px;
+      --r:     8px;
+      --r-lg:  14px;
+      --r-xl:  20px;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Page switcher (prototype only) ────────────────────── */
+    .page { display: none; }
+    .page.active { display: flex; }
+
+    /* ── LOGIN PAGE ─────────────────────────────────────────── */
+    .login-page {
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(200,148,31,0.06) 0%, transparent 70%),
+        var(--bg-base);
+    }
+
+    .login-brand {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .login-brand__icon {
+      display: block;
+      margin: 0 auto 16px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .login-brand__name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .login-brand__name em {
+      font-style: italic;
+      color: var(--gold-bright);
+    }
+
+    .login-brand__sub {
+      font-family: var(--font-data);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .login-card {
+      width: 360px;
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--r-xl);
+      padding: 36px 32px 28px;
+    }
+
+    .login-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--bg-border);
+      margin: 0 auto 28px;
+    }
+
+    .login-field {
+      margin-bottom: 14px;
+    }
+
+    .login-field label {
+      display: block;
+      font-family: var(--font-data);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+    }
+
+    .login-field input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--r);
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-field input:focus {
+      border-color: var(--gold-dim);
+    }
+
+    .login-field input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .login-btn {
+      width: 100%;
+      margin-top: 22px;
+      padding: 11px;
+      background: var(--gold);
+      border: none;
+      border-radius: var(--r);
+      color: #0E0D0A;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      letter-spacing: 0.01em;
+    }
+
+    .login-btn:hover { background: var(--gold-bright); }
+
+    .login-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-family: var(--font-data);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    /* ── DASHBOARD LAYOUT ───────────────────────────────────── */
+    .dashboard-page {
+      flex-direction: row;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 60px;
+      min-height: 100vh;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--bg-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 0;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .sidebar__logo {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 16px;
+    }
+
+    .sidebar__divider {
+      width: 28px;
+      height: 1px;
+      background: var(--bg-border);
+      margin: 8px 0;
+    }
+
+    .sidebar__nav-item {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .sidebar__nav-item:hover {
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+    }
+
+    .sidebar__nav-item.active {
+      background: var(--gold-glow);
+      color: var(--gold-bright);
+    }
+
+    .sidebar__spacer { flex: 1; }
+
+    .sidebar__avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--bg-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-family: var(--font-data);
+      cursor: pointer;
+    }
+
+    /* Main area */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top bar */
+    .topbar {
+      height: 56px;
+      border-bottom: 1px solid var(--bg-border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .topbar__batch {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .topbar__sep {
+      width: 1px;
+      height: 16px;
+      background: var(--bg-border);
+    }
+
+    .topbar__time {
+      font-family: var(--font-data);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .topbar__spacer { flex: 1; }
+
+    .topbar__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar__btn {
+      height: 30px;
+      padding: 0 12px;
+      background: transparent;
+      border: 1px solid var(--bg-border);
+      border-radius: var(--r-sm);
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .topbar__btn:hover {
+      border-color: var(--gold-dim);
+      color: var(--text-primary);
+    }
+
+    .topbar__btn--primary {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #0E0D0A;
+      font-weight: 600;
+    }
+
+    .topbar__btn--primary:hover {
+      background: var(--gold-bright);
+      border-color: var(--gold-bright);
+      color: #0E0D0A;
+    }
+
+    /* Content grid */
+    .content {
+      flex: 1;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: 24px;
+      gap: 20px;
+    }
+
+    .content__top {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+    }
+
+    /* ── PRESSURE CHART CARD ────────────────────────────────── */
+    .chart-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--r-lg);
+      padding: 22px 24px 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-card__header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .chart-card__title {
+      font-family: var(--font-data);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .chart-card__range {
+      font-family: var(--font-data);
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .chart-card__current {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .chart-card__value {
+      font-family: var(--font-data);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--gold-bright);
+      letter-spacing: -0.03em;
+    }
+
+    .chart-card__unit {
+      font-family: var(--font-data);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chart-card__delta {
+      font-family: var(--font-data);
+      font-size: 11px;
+      color: var(--active);
+      margin-left: auto;
+    }
+
+    .chart-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 160px;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .chart-card__x-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding: 0 2px;
+    }
+
+    .chart-card__x-label {
+      font-family: var(--font-data);
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* ── PULSE GAUGE CARD ───────────────────────────────────── */
+    .gauge-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--r-lg);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gauge-card__label {
+      font-family: var(--font-data);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      align-self: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .gauge-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+
+    .gauge-svg {
+      width: 160px;
+      height: 160px;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-svg .track {
+      fill: none;
+      stroke: var(--bg-elevated);
+      stroke-width: 10;
+    }
+
+    .gauge-svg .fill-arc {
+      fill: none;
+      stroke: var(--active);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 408.41; /* 2π × 65 */
+      stroke-dashoffset: 122.52; /* 70% filled = 408.41 × 0.30 */
+      transition: stroke-dashoffset 1s ease, stroke 0.5s ease;
+      filter: drop-shadow(0 0 6px var(--active));
+    }
+
+    .gauge-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .gauge-center__state {
+      font-family: var(--font-data);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--active);
+      margin-bottom: 4px;
+    }
+
+    .gauge-center__number {
+      font-family: var(--font-display);
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .gauge-center__unit {
+      font-family: var(--font-data);
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    /* Pulse animation — only when active */
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 4px var(--active)); }
+      50%       { filter: drop-shadow(0 0 14px var(--active)) drop-shadow(0 0 30px var(--active-glow)); }
+    }
+
+    @keyframes pulse-number {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.8; }
+    }
+
+    .gauge-svg.state-active .fill-arc {
+      animation: pulse-glow 2.4s ease-in-out infinite;
+    }
+
+    .gauge-center.state-active .gauge-center__number {
+      animation: pulse-number 2.4s ease-in-out infinite;
+    }
+
+    .gauge-card__stats {
+      margin-top: 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gauge-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--bg-border);
+      padding-top: 8px;
+    }
+
+    .gauge-stat__label {
+      font-family: var(--font-data);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .gauge-stat__value {
+      font-family: var(--font-data);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-data);
+    }
+
+    /* ── METRICS STRIP ──────────────────────────────────────── */
+    .metrics-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--bg-border);
+      border-radius: var(--r);
+      padding: 16px 18px;
+    }
+
+    .metric-card__label {
+      font-family: var(--font-data);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .metric-card__value {
+      font-family: var(--font-data);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .metric-card__value span {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      margin-left: 2px;
+    }
+
+    .metric-card__sub {
+      font-family: var(--font-data);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .metric-card--time .metric-card__value {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-style: italic;
+      color: var(--gold-bright);
+    }
+
+    .metric-card--status .metric-card__value {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--active);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--active);
+      animation: status-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes status-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ── SVG ICONS ──────────────────────────────────────────── */
+    .icon { display: block; }
+
+    /* ── SCROLLBAR ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bg-border); border-radius: 2px; }
+
+    /* ── PROTOTYPE NAV ──────────────────────────────────────── */
+    .proto-nav {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    .proto-btn {
+      padding: 7px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--bg-border);
+      border-radius: 999px;
+      color: var(--text-secondary);
+      font-family: var(--font-data);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .proto-btn:hover, .proto-btn.active {
+      border-color: var(--gold);
+      color: var(--gold-bright);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── PROTOTYPE NAVIGATION ────────────────────────────── -->
+<div class="proto-nav">
+  <button class="proto-btn active" onclick="showPage('login')">LOGIN</button>
+  <button class="proto-btn" onclick="showPage('dashboard')">DASHBOARD</button>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  LOGIN PAGE                                            -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page login-page active" id="page-login">
+
+  <div class="login-brand">
+    <!-- Stylized airlock bubble mark -->
+    <svg class="login-brand__icon" viewBox="0 0 48 48" fill="none">
+      <circle cx="24" cy="32" r="12" stroke="#C8941F" stroke-width="1.5" opacity="0.4"/>
+      <circle cx="24" cy="26" r="9"  stroke="#C8941F" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="24" cy="20" r="6"  stroke="#E8A832" stroke-width="1.5" opacity="0.85"/>
+      <circle cx="24" cy="16" r="3"  fill="#E8A832"/>
+      <!-- tube -->
+      <line x1="24" y1="44" x2="24" y2="36" stroke="#C8941F" stroke-width="1.5" opacity="0.4"/>
+    </svg>
+
+    <div class="login-brand__name">Fermentation <em>Monitor</em></div>
+    <div class="login-brand__sub">Batch intelligence system · v0.1</div>
+  </div>
+
+  <div class="login-card">
+    <div class="login-divider"></div>
+
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" placeholder="admin" autocomplete="off">
+    </div>
+
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" placeholder="············">
+    </div>
+
+    <button class="login-btn" onclick="showPage('dashboard')">Sign in</button>
+  </div>
+
+  <div class="login-footer" style="margin-top:20px;">
+    offline-first · zero cloud · open source
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  DASHBOARD PAGE                                        -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page dashboard-page" id="page-dashboard">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <!-- Logo mark -->
+    <svg class="sidebar__logo" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="22" r="7"  stroke="#C8941F" stroke-width="1.2" opacity="0.4"/>
+      <circle cx="16" cy="17" r="5"  stroke="#C8941F" stroke-width="1.2" opacity="0.6"/>
+      <circle cx="16" cy="13" r="3"  stroke="#E8A832" stroke-width="1.2" opacity="0.9"/>
+      <circle cx="16" cy="10" r="1.5" fill="#E8A832"/>
+    </svg>
+
+    <div class="sidebar__divider"></div>
+
+    <!-- Dashboard (active) -->
+    <div class="sidebar__nav-item active" title="Dashboard">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+    </div>
+
+    <!-- History -->
+    <div class="sidebar__nav-item" title="History">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <polyline points="1,14 5,9 8,11 11,6 15,2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- Status (operator+) -->
+    <div class="sidebar__nav-item" title="Service Status">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+        <line x1="8" y1="5" x2="8" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        <circle cx="8" cy="10.5" r="0.8" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- Users (admin) -->
+    <div class="sidebar__nav-item" title="Users (admin)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="sidebar__spacer"></div>
+
+    <div class="sidebar__avatar">A</div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar__batch">Wheat Beer <em style="font-style:italic;color:var(--gold-bright)">#1</em></div>
+      <div class="topbar__sep"></div>
+      <div class="topbar__time" id="elapsed-time">14h 23m fermenting</div>
+      <div class="topbar__spacer"></div>
+      <div class="topbar__actions">
+        <button class="topbar__btn" onclick="showPage('login')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M5 2H2v8h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M8 4l2 2-2 2M10 6H5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Sign out
+        </button>
+        <button class="topbar__btn--primary topbar__btn">New batch</button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+
+      <div class="content__top">
+
+        <!-- Pressure chart -->
+        <div class="chart-card">
+          <div class="chart-card__header">
+            <span class="chart-card__title">Headspace Pressure Δ</span>
+            <span class="chart-card__range">Last 24 h</span>
+          </div>
+          <div class="chart-card__current">
+            <span class="chart-card__value" id="current-pa">42.3</span>
+            <span class="chart-card__unit">Pa above baseline</span>
+            <span class="chart-card__delta">↑ +2.1 from last</span>
+          </div>
+
+          <div class="chart-wrap">
+            <svg class="chart-svg" id="pressure-chart" viewBox="0 0 700 170" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="#C8941F" stop-opacity="0.22"/>
+                  <stop offset="100%" stop-color="#C8941F" stop-opacity="0"/>
+                </linearGradient>
+                <!-- grid lines -->
+              </defs>
+
+              <!-- Horizontal grid -->
+              <line x1="0" y1="42"  x2="700" y2="42"  stroke="#2C2B1D" stroke-width="0.8"/>
+              <line x1="0" y1="85"  x2="700" y2="85"  stroke="#2C2B1D" stroke-width="0.8"/>
+              <line x1="0" y1="128" x2="700" y2="128" stroke="#2C2B1D" stroke-width="0.8"/>
+
+              <!-- Y labels -->
+              <text x="4" y="39"  font-family="'DM Mono'" font-size="8" fill="#504E3A">80</text>
+              <text x="4" y="82"  font-family="'DM Mono'" font-size="8" fill="#504E3A">40</text>
+              <text x="4" y="125" font-family="'DM Mono'" font-size="8" fill="#504E3A">0</text>
+
+              <!-- Gradient fill under curve -->
+              <path id="chart-fill" fill="url(#chart-grad)"/>
+
+              <!-- Fermentation curve line -->
+              <path id="chart-line"
+                fill="none"
+                stroke="#C8941F"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+
+          <div class="chart-card__x-labels">
+            <span class="chart-card__x-label">24 h ago</span>
+            <span class="chart-card__x-label">18 h ago</span>
+            <span class="chart-card__x-label">12 h ago</span>
+            <span class="chart-card__x-label">6 h ago</span>
+            <span class="chart-card__x-label">Now</span>
+          </div>
+        </div>
+
+        <!-- Pulse gauge -->
+        <div class="gauge-card">
+          <div class="gauge-card__label">Fermentation Pulse</div>
+
+          <div class="gauge-wrap">
+            <svg class="gauge-svg state-active" viewBox="0 0 160 160">
+              <!-- Track -->
+              <circle class="track" cx="80" cy="80" r="65"/>
+              <!-- Fill arc  circumference = 2π×65 ≈ 408.4 -->
+              <circle class="fill-arc" cx="80" cy="80" r="65"
+                style="stroke-dasharray:408.4; stroke-dashoffset:122.5;"/>
+            </svg>
+
+            <div class="gauge-center state-active">
+              <div class="gauge-center__state">ACTIVE</div>
+              <div class="gauge-center__number">7</div>
+              <div class="gauge-center__unit">bubbles / 10 min</div>
+            </div>
+          </div>
+
+          <div class="gauge-card__stats">
+            <div class="gauge-stat">
+              <span class="gauge-stat__label">threshold</span>
+              <span class="gauge-stat__value">0.5 Pa</span>
+            </div>
+            <div class="gauge-stat">
+              <span class="gauge-stat__label">peak rate</span>
+              <span class="gauge-stat__value">18 / 10 min</span>
+            </div>
+            <div class="gauge-stat">
+              <span class="gauge-stat__label">trend</span>
+              <span class="gauge-stat__value" style="color:var(--slow)">↘ slowing</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- content__top -->
+
+      <!-- Metrics strip -->
+      <div class="metrics-strip">
+
+        <div class="metric-card">
+          <div class="metric-card__label">Temperature</div>
+          <div class="metric-card__value">23.4 <span>°C</span></div>
+          <div class="metric-card__sub">DHT22 ambient</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-card__label">Humidity</div>
+          <div class="metric-card__value">63 <span>%RH</span></div>
+          <div class="metric-card__sub">+5% from baseline</div>
+        </div>
+
+        <div class="metric-card metric-card--time">
+          <div class="metric-card__label">Fermenting</div>
+          <div class="metric-card__value">14h 23m</div>
+          <div class="metric-card__sub">since batch start</div>
+        </div>
+
+        <div class="metric-card metric-card--status">
+          <div class="metric-card__label">Recorder</div>
+          <div class="metric-card__value">
+            <span class="status-dot"></span>
+            up · 18s lag
+          </div>
+          <div class="metric-card__sub">MQTT connected</div>
+        </div>
+
+      </div><!-- metrics-strip -->
+
+    </div><!-- content -->
+  </div><!-- main -->
+</div><!-- dashboard-page -->
+
+
+<script>
+  // ── Page switcher ─────────────────────────────────────
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.querySelectorAll('.proto-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent.toLowerCase().includes(id.slice(0,4)));
+    });
+    if (id === 'dashboard') renderChart();
+  }
+
+  // ── Fermentation pressure chart ───────────────────────
+  function renderChart() {
+    const W = 700, H = 170, pad = 20;
+    const chartH = H - pad;
+
+    // Generate 288 points (24h at 5-min intervals = 48 real data pts scaled up)
+    // Fermentation curve: Gaussian peak around hour 8-10 of this 24h window
+    // (i.e. the batch is about 14h old, so peak was ~4h ago)
+    const pts = [];
+    for (let i = 0; i <= 288; i++) {
+      const t = i / 288; // 0 → 1 over 24h
+      const hour = t * 24; // 0 → 24
+
+      // Bell curve centred at hour 10, FWHM ~10h (batch is 14h, so peak 4h ago)
+      const base = Math.exp(-Math.pow((hour - 10) / 5.5, 2)) * 78;
+
+      // Sawtooth noise: simulates real bubble pressure cycles
+      const noise = Math.sin(i * 0.7) * 3.5 + Math.sin(i * 1.9) * 1.8;
+
+      const delta = Math.max(0.3, base + noise);
+      const x = t * W;
+      const y = H - pad - (delta / 80) * chartH;
+      pts.push([x, y]);
+    }
+
+    // Build SVG path
+    const linePts = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+    const fillPts = linePts + ` L${W},${H} L0,${H} Z`;
+
+    document.getElementById('chart-line').setAttribute('d', linePts);
+    document.getElementById('chart-fill').setAttribute('d', fillPts);
+  }
+
+  // ── Animate elapsed time ──────────────────────────────
+  let seconds = 14 * 3600 + 23 * 60;
+  function updateTime() {
+    seconds++;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    document.getElementById('elapsed-time').textContent =
+      `${h}h ${String(m).padStart(2,'0')}m fermenting`;
+  }
+  setInterval(updateTime, 1000);
+
+  // ── Init ──────────────────────────────────────────────
+  renderChart();
+</script>
+</body>
+</html>
