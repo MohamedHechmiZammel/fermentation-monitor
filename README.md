@@ -2,6 +2,10 @@
 
 ESP32 + BMP280 + DHT22 → MQTT → FastAPI + SQLite → React dashboard. Tracks CO₂ headspace pressure delta during homebrew fermentation and classifies activity state (active / slow / finished) in real time.
 
+![Live dashboard — headspace pressure chart, fermentation pulse gauge, KPI cards](docs/assets/screenshot-dashboard.png)
+
+<sub>Full IIoT stack, self-proposed and built end-to-end: edge firmware → MQTT → backend → RBAC-gated real-time dashboard. Ports-and-adapters architecture, 60× Wokwi time-compression for load validation without a physical fermenter.</sub>
+
 ---
 
 ## Hardware
@@ -154,6 +158,8 @@ curl -X POST http://localhost:8000/auth/token \
 ---
 
 ## RBAC Roles
+
+<img src="docs/assets/screenshot-login.png" alt="JWT-gated sign-in" width="360">
 
 | Role | Read data | Start/end batch | Reset baseline | User mgmt | Service status |
 |---|---|---|---|---|---|
