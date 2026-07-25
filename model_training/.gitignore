@@ -1,0 +1,6 @@
+# Pipeline intermediates. Regenerate with:
+#   python train.py && python quantize.py --check && python validate.py
+# The committed artifact is ../firmware/src/model_weights.h, not these.
+model.npz
+quant.npz
+threshold.json

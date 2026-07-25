@@ -5,6 +5,18 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 
 ---
 
+## Phase M — Anomaly Detection Model (Training Pipeline)
+
+- [x] M1  Port `Sim::deltaPa()` math to Python (Gaussian envelope, bubble period, sawtooth, noise)                   ◆ /deep
+- [x] M2  Add `stuck`/`contamination` synthetic anomaly modes, tunable parameters                                     ◆ /deep
+- [x] M3  Feature extractor mirroring on-device bubble detection exactly (interval_trend = half-window delta)         ◆ /deep
+- [x] M4  Train 5→3(ReLU)→5 autoencoder on NORMAL-only features, plain numpy; compute per-feature mean/std           ◆ /deep
+- [x] M5  Hand-derive int8 quantization (weights/biases/scales) + export normalization constants                      ◆ /deep
+- [x] M6  `export_weights.py` → emits `firmware/src/model_weights.h`                                                  ✦ /task
+- [x] M7  Validate against labeled stuck/contaminated runs; pick threshold (~p99) + N (~3)                            ◆ /deep
+- [x] M8  Cross-check numpy float vs. hand-written int8 fixed-point forward pass (Python-side)                        ◆ /deep
+- [x] M9  Write `model_training/README.md`: how to run, chosen threshold/N, ground-truth limitation                   ✦ /task
+
 ## Phase 1 — Firmware
 
 - [ ] F1  Scaffold PlatformIO project with esp32dev board + Arduino framework                                        ⚡ /quick
@@ -19,6 +31,16 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 - [ ] F10 Publish payload to MQTT topic every 30 s (QoS 0, RETAIN=1, client_id="fermentation-esp32")                ⚡ /quick
 - [ ] F11 Subscribe to `fermentation/cmd`; on `{"action":"reset_baseline"}` re-run baseline + save to EEPROM         ✦ /task
 - [ ] F12 Add BOOT-button long-press (3 s) on GPIO 0 to reset baseline in EEPROM (local fallback)                   ✦ /task
+- [x] F13 `bubble_detector.h`: duty-cycled 5-10Hz burst sampling + drop-edge detection, non-blocking state machine   ◆ /deep
+- [x] F14 Reconfigure `bmp.setSampling()` to lighter filter during burst, restore `FILTER_X16` after                 ✦ /task
+- [x] F15 2-minute feature-window aggregator: [bubble_rate, mean_interval, std_interval, interval_trend, temp_delta] ✦ /task
+- [x] F16 `autoencoder.h`: apply (mean,std) normalization, then fixed-point int8 matmul + ReLU forward pass          ◆ /deep
+- [x] F17 N-consecutive-window anomaly flag; threshold/N hardcoded constants from Phase M                            ✦ /task
+- [x] F18 Extend `publishReading()` JSON additively: anomaly/recon_error, sentinel from boot; bump doc to <256>      ⚡ /quick
+- [x] F19 Extend `sim_sensors.h`: discrete bubble events matching `Sim::deltaPa()`'s edges, via `SIM_PROFILE`        ✦ /task
+- [x] F20 Add `SIM_PROFILE=NORMAL|STUCK|CONTAMINATED` build flag in `platformio.ini`                                 ⚡ /quick
+- [x] F21 Sequence burst-sampling vs. 30s publish tick: no I2C interleaving                                          ◆ /deep
+- [x] F22 Reset bubble-detector/aggregator state whenever `captureBaseline()` runs                                   ✦ /task
 
 ## Phase B — Broker Configuration
 
@@ -40,6 +62,8 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 - [ ] R3  Subscribe to topic, parse JSON, insert row (map `delta_pressure_pa` → `delta_pa`)                          ✦ /task
 - [ ] R4  Add startup log: print broker address, topic, and DB path                                                  ⚡ /quick
 - [ ] R5  Test with `mosquitto_pub -t fermentation/sensor -m '{"ts":1,...}'`                                         ⚡ /quick
+- [x] R6  Guarded `ALTER TABLE` migration for anomaly/recon_error in `ensure_schema()`                                ✦ /task
+- [x] R7  Parse anomaly/recon_error with `.get()` defaults in `on_message()`, insert into readings                    ⚡ /quick
 
 ## Phase 3 — API + RBAC
 
@@ -55,6 +79,8 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 - [ ] A10 Test `POST /device/reset-baseline` → MQTT message on `fermentation/cmd`                                    ⚡ /quick
 - [ ] A11 Test `GET /service/status` → shows recorder lag                                                            ⚡ /quick
 - [ ] A12 Test batch flow: POST /batches → GET /batches → PUT /batches/1/end                                         ⚡ /quick
+- [x] A13 Mirror identical anomaly/recon_error migration in `lifespan()`                                              ⚡ /quick
+- [x] A14 (optional) Extend `/summary` with anomaly_active/latest recon_error                                         ✦ /task
 
 ## Phase 4 — Dashboard
 
@@ -73,6 +99,10 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 - [ ] D12 Write `UsersPage.jsx` (admin only): user table, create form, deactivate button                             ✦ /task
 - [ ] D13 Write `ServiceStatus.jsx` (operator+): recorder up/down + last reading lag                                 ✦ /task
 - [ ] D14 Implement History view + batch selector: dropdown, full curve, zoom/pan                                    ✦ /task
+- [x] D15 Add `--anomaly`/`--anomaly-glow` tokens to `index.css` `:root`, matching `--active` pattern                 ⚡ /quick
+- [x] D16 Build `AnomalyBadge` as a separate indicator (not folded into ActivityBadge's state enum)                   ✦ /task
+- [x] D17 Wire `anomaly` from `readings.at(-1)` (not `/summary`) into TopBar; render AnomalyBadge alongside ActivityBadge ✦ /task
+- [x] D18 Add anomaly markers to HistoryPage's chart                                                                  ✦ /task
 
 ## Phase W — Wokwi Simulation Setup
 
@@ -84,6 +114,8 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 - [ ] W6  Confirm MQTT messages arrive on fermentation/sensor every 30 s with valid JSON                             ⚡ /quick
 - [ ] W7  Run recorder against live simulation — rows grow in SQLite                                                 ⚡ /quick
 - [ ] W8  Verify activity transitions: active → slow → finished over ~35 min                                         ⚡ /quick
+- [x] W9  Add wokwi-cli run scripts per `SIM_PROFILE`                                                                 ✦ /task
+- [x] W10 Run STUCK/CONTAMINATED profiles; confirm anomaly:true within expected latency; NORMAL never flags          ⚡ /quick
 
 ## Phase 5 — Integration
 
@@ -92,3 +124,6 @@ Model:  ⚡ /quick (haiku)   ✦ /task (sonnet)   ◆ /deep (opus)
 - [ ] I3  Full stack smoke test: ESP32 → MQTT → recorder → API → dashboard                                          ✦ /task
 - [ ] I4  Calibrate delta_pa threshold with real airlock bubble test                                                 ◆ /deep
 - [ ] I5  Start a batch before first real fermentation: `POST /batches {"name":"Test Batch #1"}`                     ⚡ /quick
+- [x] I6  Full-stack smoke test including anomaly fields, ESP32→MQTT→recorder→API→dashboard                          ✦ /task
+- [x] I7  Document synthetic-ground-truth limitation prominently in README                                            ⚡ /quick
+- [x] I8  Write architecture write-up: hand-rolled-vs-TFLM decision, full detection pipeline rationale                ✦ /task

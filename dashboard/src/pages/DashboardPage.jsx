@@ -66,6 +66,7 @@ export default function DashboardPage() {
         <TopBar
           batchName={activeBatch?.name}
           activity={summary.activity}
+          anomaly={summary.anomaly_active}
           onNewBatch={canCreateBatch ? () => setShowModal(true) : undefined}
         />
 

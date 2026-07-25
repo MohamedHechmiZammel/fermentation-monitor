@@ -52,7 +52,7 @@ export function useReadings() {
 
 export function useSummary() {
   const { token } = useAuth()
-  const [summary, setSummary] = useState({ activity: 'finished', bubble_rate: 0, duration_s: 0 })
+  const [summary, setSummary] = useState({ activity: 'finished', bubble_rate: 0, duration_s: 0, anomaly_active: false, recon_error: null })
 
   useEffect(() => {
     if (!token) return

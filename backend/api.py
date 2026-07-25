@@ -73,6 +73,15 @@ async def lifespan(app: FastAPI):
 
         CREATE INDEX IF NOT EXISTS idx_readings_received_at ON readings(received_at);
     """)
+
+    # Guarded migration: CREATE TABLE IF NOT EXISTS above silently no-ops against a
+    # pre-existing readings table, so add the anomaly-detection columns by hand if missing.
+    existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(readings)")}
+    if "anomaly" not in existing_cols:
+        conn.execute("ALTER TABLE readings ADD COLUMN anomaly INTEGER")
+    if "recon_error" not in existing_cols:
+        conn.execute("ALTER TABLE readings ADD COLUMN recon_error REAL")
+
     ensure_users_table(conn)
     conn.commit()
     conn.close()
@@ -154,6 +163,11 @@ async def get_summary(_user: Annotated[dict, Depends(AnyRole)] = None):
         # Duration since first reading
         first = conn.execute("SELECT MIN(received_at) FROM readings").fetchone()[0]
         duration_s = (now - first) if first else 0
+
+        # Latest anomaly state
+        latest = conn.execute(
+            "SELECT anomaly, recon_error FROM readings ORDER BY received_at DESC LIMIT 1"
+        ).fetchone()
     finally:
         conn.close()
 
@@ -166,7 +180,16 @@ async def get_summary(_user: Annotated[dict, Depends(AnyRole)] = None):
     else:
         activity = "finished"
 
-    return {"activity": activity, "bubble_rate": bubble_rate, "duration_s": duration_s}
+    anomaly_active = bool(latest["anomaly"]) if latest else False
+    recon_error = latest["recon_error"] if latest else None
+
+    return {
+        "activity": activity,
+        "bubble_rate": bubble_rate,
+        "duration_s": duration_s,
+        "anomaly_active": anomaly_active,
+        "recon_error": recon_error,
+    }
 
 
 @app.get("/health")

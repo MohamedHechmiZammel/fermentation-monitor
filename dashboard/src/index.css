@@ -18,6 +18,9 @@
   --slow-glow:   rgba(232, 144, 64, 0.22);
   --finished:    #5A7A8C;
 
+  --anomaly:      #E2455A;
+  --anomaly-glow: rgba(226, 69, 90, 0.22);
+
   --text-primary:   #EDE8D4;
   --text-secondary: #A09878;
   --text-muted:     #504E3A;
