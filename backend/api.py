@@ -78,9 +78,19 @@ async def lifespan(app: FastAPI):
     # pre-existing readings table, so add the anomaly-detection columns by hand if missing.
     existing_cols = {row["name"] for row in conn.execute("PRAGMA table_info(readings)")}
     if "anomaly" not in existing_cols:
-        conn.execute("ALTER TABLE readings ADD COLUMN anomaly INTEGER")
+        try:
+            conn.execute("ALTER TABLE readings ADD COLUMN anomaly INTEGER")
+        except sqlite3.OperationalError as e:
+            # Another process added it between PRAGMA and ALTER — fine.
+            if "duplicate column name" not in str(e):
+                raise
     if "recon_error" not in existing_cols:
-        conn.execute("ALTER TABLE readings ADD COLUMN recon_error REAL")
+        try:
+            conn.execute("ALTER TABLE readings ADD COLUMN recon_error REAL")
+        except sqlite3.OperationalError as e:
+            # Another process added it between PRAGMA and ALTER — fine.
+            if "duplicate column name" not in str(e):
+                raise
 
     ensure_users_table(conn)
     conn.commit()
