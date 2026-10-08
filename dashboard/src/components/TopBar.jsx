@@ -1,7 +1,8 @@
 import { useAuth } from '../contexts/AuthContext'
 import ActivityBadge from './ActivityBadge'
+import AnomalyBadge from './AnomalyBadge'
 
-export default function TopBar({ batchName, activity, onNewBatch }) {
+export default function TopBar({ batchName, activity, anomaly, onNewBatch }) {
   const { logout } = useAuth()
 
   return (
@@ -22,6 +23,8 @@ export default function TopBar({ batchName, activity, onNewBatch }) {
           <ActivityBadge state={activity} />
         </>
       )}
+
+      {anomaly && <AnomalyBadge active={anomaly} />}
 
       <div style={{ flex: 1 }} />
 

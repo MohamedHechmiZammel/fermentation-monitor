@@ -1,0 +1,9 @@
+# Offline training pipeline for the on-device anomaly detector.
+#
+# numpy is the ONLY dependency, and that is a deliberate constraint, not an
+# accident of scope: the autoencoder's forward pass, backward pass, Adam
+# update and int8 quantization are all hand-written here precisely so that the
+# fixed-point C port in firmware/src/ has an unambiguous, auditable reference.
+# Do not add TensorFlow, PyTorch, scikit-learn or an Edge Impulse SDK -- see
+# CONSTITUTION.md "Out of Scope".
+numpy>=1.24

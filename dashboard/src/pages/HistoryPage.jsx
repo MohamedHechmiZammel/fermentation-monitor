@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import Sidebar from '../components/Sidebar'
 import TopBar from '../components/TopBar'
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceDot } from 'recharts'
 
 function fmt(ts) {
   const d = new Date(ts * 1000)
@@ -35,6 +35,7 @@ export default function HistoryPage() {
   }, [selected])
 
   const selectedBatch = batches.find(b => b.id === selected)
+  const anomalies = readings.filter(r => r.anomaly)
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -65,8 +66,22 @@ export default function HistoryPage() {
 
           {/* Pressure history chart */}
           <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--bg-border)', borderRadius: 'var(--r-lg)', padding: '20px 22px 14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontFamily: 'var(--font-data)', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 16 }}>
-              Full batch · Headspace Pressure Δ ({readings.length} readings)
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <span style={{ fontFamily: 'var(--font-data)', fontSize: 9, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+                Full batch · Headspace Pressure Δ ({readings.length} readings)
+              </span>
+              {anomalies.length > 0 && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '2px 8px', borderRadius: 999,
+                  fontFamily: 'var(--font-data)', fontSize: 9,
+                  letterSpacing: '0.1em', textTransform: 'uppercase',
+                  color: 'var(--anomaly)', background: 'var(--anomaly-glow)', border: '1px solid rgba(226,69,90,0.3)',
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--anomaly)', display: 'inline-block' }} />
+                  {anomalies.length} anomal{anomalies.length === 1 ? 'y' : 'ies'} detected
+                </span>
+              )}
             </div>
             {loading ? (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-data)', fontSize: 12 }}>
@@ -87,6 +102,14 @@ export default function HistoryPage() {
                     <YAxis tick={{ fontFamily: 'var(--font-data)', fontSize: 8, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} width={28}/>
                     <Tooltip contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--bg-border)', borderRadius: 6, fontFamily: 'var(--font-data)', fontSize: 11, color: 'var(--text-primary)' }} labelFormatter={fmt}/>
                     <Area type="monotone" dataKey="delta_pa" stroke="#C8941F" strokeWidth={1.8} dot={false} fill="url(#histGrad)" isAnimationActive={false}/>
+                    {anomalies.map(r => (
+                      <ReferenceDot
+                        key={r.received_at}
+                        x={r.received_at} y={r.delta_pa}
+                        r={5} fill="var(--anomaly)" stroke="var(--bg-surface)" strokeWidth={1.5}
+                        ifOverflow="extendDomain"
+                      />
+                    ))}
                   </AreaChart>
                 </ResponsiveContainer>
               </div>

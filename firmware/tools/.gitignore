@@ -1,0 +1,5 @@
+# host cross-check binaries + generated inputs
+host_test
+sim_test
+sim_test_*
+*.csv

@@ -55,6 +55,16 @@ def ensure_schema():
 
         CREATE INDEX IF NOT EXISTS idx_readings_received_at ON readings(received_at);
     """)
+
+    # Guarded migration: `anomaly`/`recon_error` were added after the original
+    # CREATE TABLE shipped, so existing databases need an explicit ALTER TABLE —
+    # CREATE TABLE IF NOT EXISTS silently no-ops on a table that already exists.
+    existing_cols = {row[1] for row in conn.execute("PRAGMA table_info(readings)")}
+    if "anomaly" not in existing_cols:
+        conn.execute("ALTER TABLE readings ADD COLUMN anomaly INTEGER")
+    if "recon_error" not in existing_cols:
+        conn.execute("ALTER TABLE readings ADD COLUMN recon_error REAL")
+
     conn.commit()
     conn.close()
 
@@ -87,6 +97,11 @@ def on_message(client, userdata, msg):
         temp_bmp    = float(payload["temp_bmp"])
         temp_dht    = float(payload["temp_dht"])
         humidity    = float(payload["humidity"])
+        # Additive TinyML anomaly-detection fields — optional/new, so use .get()
+        # with sentinel defaults instead of bracket access, since older firmware
+        # (or the transition period before it lands) won't send them.
+        anomaly     = bool(payload.get("anomaly", False))
+        recon_error = float(payload.get("recon_error", 0.0))
     except (json.JSONDecodeError, KeyError, ValueError) as e:
         print(f"[recorder] malformed payload: {e} — {msg.payload!r}")
         return
@@ -96,9 +111,9 @@ def on_message(client, userdata, msg):
         batch_id = active_batch_id(conn)
         conn.execute(
             "INSERT INTO readings "
-            "(ts, received_at, pressure_pa, delta_pa, temp_bmp, temp_dht, humidity, batch_id) "
-            "VALUES (?,?,?,?,?,?,?,?)",
-            (ts, received_at, pressure_pa, delta_pa, temp_bmp, temp_dht, humidity, batch_id),
+            "(ts, received_at, pressure_pa, delta_pa, temp_bmp, temp_dht, humidity, batch_id, anomaly, recon_error) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (ts, received_at, pressure_pa, delta_pa, temp_bmp, temp_dht, humidity, batch_id, anomaly, recon_error),
         )
         conn.commit()
     finally:

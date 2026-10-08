@@ -11,7 +11,7 @@
       "attrs": {}
     },
     {
-      "type": "wokwi-bmp280",
+      "type": "board-bmp280",
       "id": "bmp",
       "top": -100,
       "left": 250,
@@ -32,13 +32,13 @@
     }
   ],
   "connections": [
-    ["esp:21",    "bmp:SDA", "green",  []],
-    ["esp:22",    "bmp:SCK", "blue",   []],
+    ["esp:D21",    "bmp:SDA", "green",  []],
+    ["esp:D22",    "bmp:SCK", "blue",   []],
     ["esp:3V3",   "bmp:VCC", "red",    []],
     ["esp:GND.1", "bmp:GND", "black",  []],
     ["esp:GND.1", "bmp:SDO", "black",  []],
     ["esp:3V3",   "bmp:CSB", "red",    []],
-    ["esp:4",     "dht:SDA", "orange", []],
+    ["esp:D4",     "dht:SDA", "orange", []],
     ["esp:3V3",   "dht:VCC", "red",    []],
     ["esp:GND.1", "dht:GND", "black",  []]
   ],

@@ -20,9 +20,11 @@ active, peaking, or complete — without touching or disturbing the vessel.
 - pH or specific-gravity measurement (invasive; excluded by design).
 - Cloud sync or mobile push notifications (zero-cost constraint).
 - Multi-vessel support (v1 is single vessel).
+- Cloud-based or third-party ML training/inference — the anomaly model is trained offline on a dev machine and its entire forward pass runs on the ESP32 itself; no TensorFlow Lite Micro, Edge Impulse, or hosted inference API is used.
 
 ## Success Criteria
 - ESP32 reads CO₂ pressure rate, temperature, and humidity every 30 s.
 - Data is published over MQTT to a local Python broker/recorder.
 - React + Vite dashboard shows a live fermentation curve and alerts when activity drops below threshold.
 - Full stack runs on a single laptop + ESP32 with no paid infrastructure.
+- On-device anomaly detection flags stuck or contaminated fermentation directly from the pressure sawtooth pattern, with no cloud dependency or ML framework.
