@@ -238,7 +238,10 @@ void serviceSampler() {
     if ((long)(millis() - nextSampleMs) < 0) return;
     nextSampleMs += AE_SAMPLE_PERIOD_MS;
     if ((long)(millis() - nextSampleMs) > (long)AE_SAMPLE_RESYNC_MS) {
-        nextSampleMs = millis() + AE_SAMPLE_PERIOD_MS;   // long stall — re-anchor
+        // Long stall (e.g. blocking Wi-Fi/MQTT reconnect in loop()). The detector
+        // clock advances 100 ms per sample, so feeding on would stretch the stalled
+        // seconds into the 120 s window. Drop the polluted state and restart clean.
+        resetAnomalyState();   // also re-anchors nextSampleMs
     }
     lastRawPa = bmp.readPressure();
     // lastTempDht is refreshed by publishReading(); the DHT22 cannot be polled
